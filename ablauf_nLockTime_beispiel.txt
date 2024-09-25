@@ -1,0 +1,91 @@
+Aktueller Blockhoehe = 862794 - in einer Stunde: 862800
+
+Sender:    bc1q01234567890012345678900123456789001234
+Empfänger: bc2q01234567890012345678900123456789001234
+nLockTime = Blockhoehe, ab der eine Transaktion veröffentlicht werden kann
+
+
+-----------
+1) Listunspend - Eine Transaktion holen (auf vout achten!)
+bitcoin-cli -conf=/mnt/bitcoin/bitcoin.conf  listunspent
+->
+[
+  {          
+    "txid": "4242424567890abcdef01234567890abcdef01234567890abcdef01234567890",
+    "vout": 1,  
+    "address": "bc1q01234567890012345678900123456789001234",
+    "scriptPubKey": "00000000000000000000000000000000000000cb",
+    "amount": 0.00030000,
+    "confirmations": 3294,
+    "spendable": true,
+    "solvable": true,
+    "desc": "wpkh([f965fd6b/0'/1'/0']020000000000000000000000000000000000000000000000113b936)#p4vmship",
+    "safe": true
+  }
+]
+
+
+-----------
+2) CreateRawTransaction
+
+Inputs: 0.00030000, Output and Empfänger: 0.00020000, d.h Differenz von 0.00010000 verbleibt beim Miner (!)
+
+bitcoin-cli -conf=/mnt/bitcoin/bitcoin.conf createrawtransaction '[{"txid":"4242424567890abcdef01234567890abcdef01234567890abcdef01234567890","vout":1}]' '[{"bc2q01234567890012345678900123456789001234":0.00020000}]' 862800
+->
+0200000001174cc9100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0d00
+
+-
+3) Transaktion signieren
+bitcoin-cli signrawtransactionwithwallet <raw_tx_hex>
+
+bitcoin-cli -conf=/mnt/bitcoin/bitcoin.conf signrawtransactionwithwallet 0200000001174cc9100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0d00
+->
+{
+  "hex": "0200000001174cc9100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0d00",
+  "complete": true
+}
+
+-----------
+4) TX veröffentlichen:
+bitcoin-cli -conf=/mnt/bitcoin/bitcoin.conf sendrawtransaction <signed_rawtransaction_hex>
+bitcoin-cli -conf=/mnt/bitcoin/bitcoin.conf sendrawtransaction 0200000001174cc9100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0d00
+
+
+Vor Erreichen von 862800:
+->
+error code: -26
+error message:
+non-final
+
+NACH(AB) Erreichen von 862800:
+f5000000000000000000000000000abcdefabcdef00000000000000000000000000
+-> Transaktion-ID
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> Nachteile:
+
+- Private-Key muss gelöscht werden (wallet.dat)
+- Transaktionsgebühren in der Zukunft (z.B. der 18te Geburtstag eins 6 Jährigen) sind aktuelle unbekannt
+
+
+
+
